@@ -1,0 +1,753 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Pizza Nostra - Toma de Pedidos</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: system-ui, 'Segoe UI', 'Roboto', 'Helvetica Neue', sans-serif;
+        }
+
+        body {
+            background: #fef7e6;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .app-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 32px;
+            box-shadow: 0 20px 35px rgba(0,0,0,0.1);
+            overflow: hidden;
+            padding: 20px 24px;
+        }
+
+        h1 {
+            font-size: 1.9rem;
+            margin: 0 0 8px 0;
+            color: #b3413b;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: space-between;
+        }
+
+        h1 small {
+            font-size: 0.9rem;
+            font-weight: normal;
+            background: #f0e2c5;
+            padding: 6px 12px;
+            border-radius: 40px;
+            color: #5a3e1b;
+        }
+
+        .info-mesa {
+            background: #f9e8d0;
+            padding: 15px 20px;
+            border-radius: 28px;
+            margin: 15px 0 25px 0;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .campo-mesa {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        .campo-mesa input {
+            font-size: 1.2rem;
+            width: 80px;
+            text-align: center;
+            padding: 8px;
+            border-radius: 20px;
+            border: 1px solid #c8a87b;
+            background: white;
+            font-weight: bold;
+        }
+
+        .cliente-note {
+            flex: 2;
+            min-width: 200px;
+        }
+
+        .cliente-note label {
+            font-weight: bold;
+            margin-right: 8px;
+        }
+
+        .cliente-note input {
+            width: 70%;
+            padding: 8px 12px;
+            border-radius: 28px;
+            border: 1px solid #d4b28c;
+            background: white;
+        }
+
+        .grid-pizzas {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+            gap: 18px;
+            margin: 20px 0;
+        }
+
+        .pizza-card {
+            background: #fffaf2;
+            border-radius: 28px;
+            border: 1px solid #f3e1ca;
+            padding: 15px;
+            transition: 0.1s;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.02);
+        }
+
+        .pizza-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 12px;
+            border-bottom: 2px dashed #ecdbbf;
+            padding-bottom: 8px;
+        }
+
+        .pizza-name {
+            font-weight: 800;
+            font-size: 1.25rem;
+            color: #bb4d3e;
+        }
+
+        .check-control {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .check-control label {
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .qty-select {
+            width: 65px;
+            padding: 5px;
+            border-radius: 40px;
+            border: 1px solid #d6b27b;
+            background: white;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .tamaño-opts {
+            display: flex;
+            gap: 18px;
+            margin: 12px 0;
+            background: #fef3e4;
+            padding: 8px 12px;
+            border-radius: 48px;
+        }
+
+        .tamaño-opts label {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-weight: 500;
+        }
+
+        .extra-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin: 12px 0;
+            background: #fff6ec;
+            padding: 10px;
+            border-radius: 20px;
+        }
+
+        .extra-list label {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.85rem;
+            background: white;
+            padding: 4px 10px;
+            border-radius: 30px;
+            border: 1px solid #e9cfb3;
+        }
+
+        .nota-pizza {
+            width: 100%;
+            margin: 10px 0 5px;
+            padding: 8px;
+            border-radius: 20px;
+            border: 1px solid #e1c8aa;
+            background: white;
+            font-size: 0.8rem;
+            resize: vertical;
+        }
+
+        .precio-tag {
+            font-size: 0.75rem;
+            font-weight: bold;
+            color: #7f613f;
+            text-align: right;
+        }
+
+        .bebidas-section, .resumen-cuenta {
+            margin: 30px 0 20px;
+            background: #fcf6ed;
+            border-radius: 32px;
+            padding: 20px;
+        }
+
+        .bebidas-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 12px;
+            margin-top: 12px;
+        }
+
+        .bebida-item {
+            background: white;
+            border-radius: 60px;
+            padding: 8px 15px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border: 1px solid #ebd5b3;
+        }
+
+        .bebida-item input {
+            width: 22px;
+            height: 22px;
+            accent-color: #b3413b;
+        }
+
+        .resumen-card {
+            background: white;
+            border-radius: 28px;
+            padding: 15px 25px;
+            box-shadow: 0 6px 12px rgba(0,0,0,0.05);
+        }
+
+        .total-final {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: #2c6e2f;
+            text-align: right;
+            border-top: 2px solid #ddc7a8;
+            padding-top: 15px;
+            margin-top: 12px;
+        }
+
+        .acciones-botones {
+           
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+            gap: 18px;
+            margin-top: 25px;
+            margin-bottom: 10px;
+        }
+
+        button {
+            background: #bb4d3e;
+            border: none;
+            padding: 12px 28px;
+            border-radius: 40px;
+            font-weight: bold;
+            font-size: 1rem;
+            color: white;
+            cursor: pointer;
+            transition: 0.2s;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        button.secondary {
+            background: #ebc28e;
+            color: #4a2e1a;
+        }
+
+        button:hover {
+            filter: brightness(0.95);
+            transform: scale(0.97);
+        }
+
+        .print-report {
+            background: #2c6e2f;
+        }
+
+        hr {
+            border-color: #efdfca;
+        }
+
+        @media (max-width: 700px) {
+            .app-container {
+                padding: 12px;
+            }
+            .pizza-header {
+                flex-direction: column;
+            }
+            .extra-list label {
+                font-size: 0.75rem;
+            }
+        }
+        h3 {
+            color: #b65c3c;
+            margin: 0 0 10px 0;
+        }
+    </style>
+</head>
+<body>
+<div class="app-container">
+    <h1>
+        🍕 Pizza Nostra 
+        <small>Pedidos por mesa</small>
+    </h1>
+    
+    <!-- zona datos mesa / cliente -->
+    <div class="info-mesa">
+        <div class="campo-mesa">
+            <span>📌 Mesa N°</span>
+            <input type="number" id="numeroMesa" value="1" min="1">
+        </div>
+        <div class="cliente-note">
+            <label>👤 Cliente / Nota:</label>
+            <input type="text" id="nombreCliente" placeholder="Ej: Familia Rodríguez, opcional" value="">
+        </div>
+    </div>
+
+    <!-- CATÁLOGO DE PIZZAS (data generada desde JS) -->
+    <h3>🍕 Elige tus pizzas (✓ y cantidad)</h3>
+     
+    <div id="pizzasContainer" class="grid-pizzas"></div>
+   
+    <!-- Sección Bebidas -->
+    <div class="bebidas-section">
+        <h3>🥤 Bebidas</h3>
+        <div id="bebidasContainer" class="bebidas-grid"></div>
+    </div>
+
+    <!-- Resumen y total -->
+    <div class="resumen-cuenta">
+        <h3>🧾 Pedido actual</h3>
+        <div id="resumenDetalle" class="resumen-card">
+            <em>No hay productos seleccionados</em>
+        </div>
+        <div class="total-final" id="totalPagar">Total: $0 COP</div>
+        <div class="acciones-botones">
+            <button id="btnResetPedido" class="secondary">🗑️ Limpiar todo</button>
+            <button id="btnImprimirTicket" class="print-report">🖨️ Enviar a impresora WiFi</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // --------------------------------------------------------------
+    // 1. DATOS BASE: Pizzas (nombre, ingredientes, precioPeq, precioGrand)
+    // --------------------------------------------------------------
+    const pizzasData = [
+        { id: "margarita", nombre: "Margarita", ingredientes: "Salsa y Mozarella", precioPeq: 18000, precioGrand: 36000 },
+        { id: "jamonqueso", nombre: "Jamón y queso", ingredientes: "Salsa, mozarella y jamón", precioPeq: 18000, precioGrand: 36000 },
+        { id: "capresa", nombre: "Capresa", ingredientes: "Salsa, mozarella, tomate y albahaca", precioPeq: 18000, precioGrand: 36000 },
+        { id: "pepperoni", nombre: "Pepperoni", ingredientes: "Salsa, mozarella y pepperoni", precioPeq: 24000, precioGrand: 48000 },
+        { id: "primavera", nombre: "Primavera", ingredientes: "Salsa, mozarella, jamón y maíz", precioPeq: 24000, precioGrand: 48000 },
+        { id: "napolitana", nombre: "Napolitana", ingredientes: "Salsa, mozzarella, tomate, orégano y albahaca", precioPeq: 24000, precioGrand: 48000 },
+        { id: "tocineta", nombre: "Tocineta", ingredientes: "Salsa Mozarella y tocineta", precioPeq: 24000, precioGrand: 48000 },
+        { id: "cuatroquesos", nombre: "4 quesos", ingredientes: "Salsa, mozarella, queso amarillo, queso crema y pecorino", precioPeq: 30000, precioGrand: 60000 },
+        { id: "champinones", nombre: "Champiñones", ingredientes: "Salsa, mozarella y champiñones", precioPeq: 24000, precioGrand: 48000 },
+        { id: "siciliana", nombre: "Siciliana", ingredientes: "Salsa, mozarella, cebolla y orégano", precioPeq: 18000, precioGrand: 40000 },
+        { id: "hawaiana", nombre: "Hawaiana", ingredientes: "Salsa, mozarella, tocineta y piña", precioPeq: 30000, precioGrand: 60000 },
+        { id: "vegetariana", nombre: "Vegetariana", ingredientes: "Salsa mozarella, cebolla, pimentón, maíz y champiñones", precioPeq: 30000, precioGrand: 60000 }
+    ];
+
+    // Precios adicionales (pequeña/grande)
+    const adicionalesPrecios = {
+        "Mozarella": { pequena: 8000, grande: 16000 },
+        "Vegetales": { pequena: 2000, grande: 2000 },
+        "Tocineta": { pequena: 6000, grande: 12000 },
+        "Champiñones": { pequena: 6000, grande: 12000 },
+        "Maíz": { pequena: 6000, grande: 12000 },
+        "Aceitunas negras": { pequena: 6000, grande: 12000 },
+        "Anchoas": { pequena: 6000, grande: 12000 }
+    };
+    const listaAdicionales = Object.keys(adicionalesPrecios);
+
+    // Bebidas
+    const bebidasData = [
+        { nombre: "Pepsi 2 Litros", precio: 12000 },
+        { nombre: "Pepsi 350 mL", precio: 4000 },
+        { nombre: "Coca-Cola 2 Litros", precio: 14000 },
+        { nombre: "Coca-Cola 1 Litro", precio: 8000 },
+        { nombre: "Coca-Cola 1.25 Litro Retornable", precio: 8000 }
+    ];
+
+    // Estado global del pedido:
+    // Cada pizza se maneja como un objeto dinámico: { id, nombre, size, quantity, extras: [], nota }
+    // Pero para facilidad, usaremos un array reactivo sincronizado con la UI.
+    let pedidoPizzas = []; // almacena instancias de pizzas seleccionadas (se añaden/quitan cuando quantity =0)
+    // Sino, manejaremos en tiempo real: cada card tiene su propio estado mediante eventos.
+    // Para persistencia: vamos a mantener un Map o array actualizado con los valores actuales de cada pizza.
+    // La mejor práctica: guardar en objeto global que se lee al recalcular.
+    let estadoPizzas = new Map(); // key: id pizza, value: { cantidad, tamaño, extrasSeleccionados, nota }
+    let bebidasSeleccionadas = new Map(); // key: nombreBebida, value: boolean
+
+    // Inicializar estado pizzas
+    pizzasData.forEach(p => {
+        estadoPizzas.set(p.id, {
+            cantidad: 0,
+            tamaño: "pequeña",   // "pequeña" o "grande"
+            extras: [],
+            nota: ""
+        });
+    });
+    bebidasData.forEach(b => { bebidasSeleccionadas.set(b.nombre, false); });
+
+    // Renderizar UI de pizzas
+    function renderPizzas() {
+        const container = document.getElementById("pizzasContainer");
+        container.innerHTML = "";
+        pizzasData.forEach(pizza => {
+            const state = estadoPizzas.get(pizza.id);
+            const cantidad = state.cantidad;
+            const tamañoActual = state.tamaño;
+            const extrasActual = state.extras || [];
+            const notaActual = state.nota || "";
+
+            const card = document.createElement("div");
+            card.className = "pizza-card";
+
+            // Precios base según tamaño
+            const precioBase = (tamañoActual === "pequeña") ? pizza.precioPeq : pizza.precioGrand;
+            const precioExtras = extrasActual.reduce((sum, extra) => {
+                const precioExtra = adicionalesPrecios[extra]?.[tamañoActual === "pequeña" ? "pequena" : "grande"] || 0;
+                return sum + precioExtra;
+            }, 0);
+            const totalPizzaItem = (precioBase + precioExtras) * (cantidad || 0);
+
+            // Header con checkbox + cantidad
+            const headerDiv = document.createElement("div");
+            headerDiv.className = "pizza-header";
+            headerDiv.innerHTML = `
+                <span class="pizza-name">${pizza.nombre}</span>
+                <div class="check-control">
+                    <label>✔️ 
+                        <input type="checkbox" class="pizza-checkbox" data-id="${pizza.id}" ${cantidad > 0 ? 'checked' : ''}>
+                    </label>
+                    <label>📦 Cant: 
+                        <input type="number" class="qty-select" data-id="${pizza.id}" value="${cantidad}" min="0" max="20" step="1" ${cantidad === 0 ? 'disabled' : ''}>
+                    </label>
+                </div>
+            `;
+            // Tamaño radio
+            const sizeDiv = document.createElement("div");
+            sizeDiv.className = "tamaño-opts";
+            sizeDiv.innerHTML = `
+                <label><input type="radio" name="size_${pizza.id}" value="pequeña" ${tamañoActual === "pequeña" ? "checked" : ""} ${cantidad === 0 ? 'disabled' : ''}> 🍕 Pequeña</label>
+                <label><input type="radio" name="size_${pizza.id}" value="grande" ${tamañoActual === "grande" ? "checked" : ""} ${cantidad === 0 ? 'disabled' : ''}> 🍕 Grande</label>
+            `;
+            // Extras (checkboxes)
+            const extrasDiv = document.createElement("div");
+            extrasDiv.className = "extra-list";
+            listaAdicionales.forEach(extra => {
+                const isChecked = extrasActual.includes(extra);
+                const chk = document.createElement("label");
+                chk.innerHTML = `<input type="checkbox" class="extra-check" data-pizza="${pizza.id}" data-extra="${extra}" ${isChecked ? "checked" : ""} ${cantidad === 0 ? 'disabled' : ''}> ${extra}`;
+                extrasDiv.appendChild(chk);
+            });
+            // Nota especial
+            const notaTextarea = document.createElement("textarea");
+            notaTextarea.placeholder = "Ej: mitad jamón y queso y mitad salchichón, sin cebolla...";
+            notaTextarea.className = "nota-pizza";
+            notaTextarea.value = notaActual;
+            notaTextarea.disabled = (cantidad === 0);
+            notaTextarea.setAttribute("data-id", pizza.id);
+
+            const precioInfo = document.createElement("div");
+            precioInfo.className = "precio-tag";
+            if(cantidad>0) precioInfo.innerText = `Subtotal: $${totalPizzaItem.toLocaleString()} COP`;
+            else precioInfo.innerText = "Sin seleccionar";
+
+            card.appendChild(headerDiv);
+            card.appendChild(sizeDiv);
+            card.appendChild(extrasDiv);
+            card.appendChild(notaTextarea);
+            card.appendChild(precioInfo);
+            container.appendChild(card);
+
+            // Eventos
+            const chkBox = card.querySelector(`.pizza-checkbox`);
+            const qtyInput = card.querySelector(`.qty-select`);
+            const radios = card.querySelectorAll(`input[type="radio"][name="size_${pizza.id}"]`);
+            const extraChecks = card.querySelectorAll(`.extra-check`);
+            const txtNota = card.querySelector(`.nota-pizza`);
+
+            // Checkbox: activa/desactiva pizza (cantidad pasa a 0 o 1 por defecto)
+            chkBox.addEventListener("change", (e) => {
+                const isChecked = e.target.checked;
+                let newQty = isChecked ? (estadoPizzas.get(pizza.id).cantidad || 1) : 0;
+                if(isChecked && estadoPizzas.get(pizza.id).cantidad === 0) newQty = 1;
+                if(!isChecked) newQty = 0;
+                const currentState = estadoPizzas.get(pizza.id);
+                currentState.cantidad = newQty;
+                estadoPizzas.set(pizza.id, currentState);
+                // habilitar/deshabilitar controles dependientes
+                qtyInput.disabled = (newQty === 0);
+                radios.forEach(r => r.disabled = (newQty === 0));
+                extraChecks.forEach(ch => ch.disabled = (newQty === 0));
+                txtNota.disabled = (newQty === 0);
+                if(newQty === 0) {
+                    qtyInput.value = 0;
+                } else {
+                    qtyInput.value = newQty;
+                }
+                actualizarTodo();
+            });
+
+            qtyInput.addEventListener("change", (e) => {
+                let val = parseInt(e.target.value) || 0;
+                if(val < 0) val = 0;
+                const current = estadoPizzas.get(pizza.id);
+                current.cantidad = val;
+                estadoPizzas.set(pizza.id, current);
+                if(val === 0) {
+                    chkBox.checked = false;
+                    qtyInput.disabled = true;
+                    radios.forEach(r => r.disabled = true);
+                    extraChecks.forEach(ch => ch.disabled = true);
+                    txtNota.disabled = true;
+                } else {
+                    if(!chkBox.checked) chkBox.checked = true;
+                    qtyInput.disabled = false;
+                    radios.forEach(r => r.disabled = false);
+                    extraChecks.forEach(ch => ch.disabled = false);
+                    txtNota.disabled = false;
+                }
+                actualizarTodo();
+            });
+
+            radios.forEach(radio => {
+                radio.addEventListener("change", (e) => {
+                    if(e.target.checked) {
+                        const newSize = e.target.value;
+                        const current = estadoPizzas.get(pizza.id);
+                        current.tamaño = newSize;
+                        estadoPizzas.set(pizza.id, current);
+                        actualizarTodo();
+                    }
+                });
+            });
+
+            extraChecks.forEach(chk => {
+                chk.addEventListener("change", (e) => {
+                    const extraName = e.target.getAttribute("data-extra");
+                    const current = estadoPizzas.get(pizza.id);
+                    let extrasArr = current.extras || [];
+                    if(e.target.checked) {
+                        if(!extrasArr.includes(extraName)) extrasArr.push(extraName);
+                    } else {
+                        extrasArr = extrasArr.filter(e => e !== extraName);
+                    }
+                    current.extras = extrasArr;
+                    estadoPizzas.set(pizza.id, current);
+                    actualizarTodo();
+                });
+            });
+
+            txtNota.addEventListener("input", (e) => {
+                const current = estadoPizzas.get(pizza.id);
+                current.nota = e.target.value;
+                estadoPizzas.set(pizza.id, current);
+                actualizarTodo(); // actualizar resumen pero no necesario reordenar
+            });
+        });
+    }
+
+    // Renderizar bebidas
+    function renderBebidas() {
+        const container = document.getElementById("bebidasContainer");
+        container.innerHTML = "";
+        bebidasData.forEach(b => {
+            const checked = bebidasSeleccionadas.get(b.nombre) || false;
+            const div = document.createElement("div");
+            div.className = "bebida-item";
+            div.innerHTML = `
+                <input type="checkbox" class="bebida-chk" data-nombre="${b.nombre}" ${checked ? "checked" : ""}>
+                <span><strong>${b.nombre}</strong> — $${b.precio.toLocaleString()} COP</span>
+            `;
+            container.appendChild(div);
+            const chk = div.querySelector(".bebida-chk");
+            chk.addEventListener("change", (e) => {
+                bebidasSeleccionadas.set(b.nombre, e.target.checked);
+                actualizarTodo();
+            });
+        });
+    }
+
+    // Calcular total y resumen
+    function calcularResumen() {
+        let subtotalPizzas = 0;
+        let itemsResumen = [];
+        // Pizzas
+        for(let [id, state] of estadoPizzas.entries()) {
+            const pizzaInfo = pizzasData.find(p => p.id === id);
+            if(!pizzaInfo) continue;
+            const cantidad = state.cantidad;
+            if(cantidad === 0) continue;
+            const tamaño = state.tamaño;
+            const precioBase = (tamaño === "pequeña") ? pizzaInfo.precioPeq : pizzaInfo.precioGrand;
+            const extrasArray = state.extras;
+            let sumaExtras = 0;
+            const extrasTexto = [];
+            extrasArray.forEach(ext => {
+                const precioExt = adicionalesPrecios[ext][tamaño === "pequeña" ? "pequena" : "grande"];
+                sumaExtras += precioExt;
+                extrasTexto.push(`${ext} (+$${precioExt.toLocaleString()})`);
+            });
+            const precioUnitarioTotal = precioBase + sumaExtras;
+            const totalPizza = precioUnitarioTotal * cantidad;
+            subtotalPizzas += totalPizza;
+            const tamañoLetra = tamaño === "pequeña" ? "Pequeña" : "Grande";
+            itemsResumen.push({
+                tipo: "pizza",
+                descripcion: `${cantidad}x ${pizzaInfo.nombre} (${tamañoLetra})`,
+                detalleExtras: extrasTexto.length ? ` + ${extrasTexto.join(", ")}` : "",
+                nota: state.nota ? ` ✏️ Nota: "${state.nota}"` : "",
+                totalItem: totalPizza
+            });
+        }
+        // Bebidas
+        let totalBebidas = 0;
+        bebidasData.forEach(b => {
+            if(bebidasSeleccionadas.get(b.nombre)) {
+                totalBebidas += b.precio;
+                itemsResumen.push({
+                    tipo: "bebida",
+                    descripcion: `${b.nombre}`,
+                    totalItem: b.precio
+                });
+            }
+        });
+        const totalGeneral = subtotalPizzas + totalBebidas;
+        return { itemsResumen, subtotalPizzas, totalBebidas, totalGeneral };
+    }
+
+    function actualizarResumenUI() {
+        const { itemsResumen, subtotalPizzas, totalBebidas, totalGeneral } = calcularResumen();
+        const containerResumen = document.getElementById("resumenDetalle");
+        if(itemsResumen.length === 0) {
+            containerResumen.innerHTML = "<em>No hay productos seleccionados</em>";
+        } else {
+            let html = `<ul style="margin:0; padding-left: 1.2rem;">`;
+            itemsResumen.forEach(item => {
+                if(item.tipo === "pizza") {
+                    html += `<li><strong>${item.descripcion}</strong> ${item.detalleExtras} ${item.nota || ""} → $${item.totalItem.toLocaleString()} COP</li>`;
+                } else {
+                    html += `<li>🥤 ${item.descripcion} → $${item.totalItem.toLocaleString()} COP</li>`;
+                }
+            });
+            html += `</ul><div style="margin-top:10px; font-weight:500;">Subtotal pizzas: $${subtotalPizzas.toLocaleString()} COP | Bebidas: $${totalBebidas.toLocaleString()} COP</div>`;
+            containerResumen.innerHTML = html;
+        }
+        document.getElementById("totalPagar").innerHTML = `Total: $${calcularResumen().totalGeneral.toLocaleString()} COP`;
+    }
+
+    function actualizarTodo() {
+        // re-render pizzas para reflejar precios extras y cantidades
+        renderPizzas();
+        renderBebidas();
+        actualizarResumenUI();
+    }
+
+    // reiniciar pedido completo
+    function resetPedido() {
+        estadoPizzas.forEach((val, id) => {
+            estadoPizzas.set(id, {
+                cantidad: 0,
+                tamaño: "pequeña",
+                extras: [],
+                nota: ""
+            });
+        });
+        bebidasSeleccionadas.forEach((_, key) => bebidasSeleccionadas.set(key, false));
+        document.getElementById("numeroMesa").value = "1";
+        document.getElementById("nombreCliente").value = "";
+        renderPizzas();
+        renderBebidas();
+        actualizarResumenUI();
+    }
+
+    // IMPRESIÓN (reporte a impresora vía wifi)
+    function imprimirTicket() {
+        const mesa = document.getElementById("numeroMesa").value || "?";
+        const cliente = document.getElementById("nombreCliente").value.trim() || "Cliente general";
+        const { itemsResumen, totalGeneral } = calcularResumen();
+        if(itemsResumen.length === 0) {
+            alert("No hay items en el pedido. Agrega pizzas o bebidas antes de imprimir.");
+            return;
+        }
+        let ticketHtml = `
+            <html>
+            <head><title>Pedido Pizza Nostra</title>
+            <style>
+                body { font-family: monospace; padding: 20px; max-width: 300px; margin:auto; }
+                h2 { text-align:center; color:#b3413b; }
+                .linea { border-top: 1px dashed #aaa; margin: 10px 0; }
+                .total { font-weight: bold; font-size:1.3em; text-align:right; }
+            </style>
+            </head>
+            <body>
+            <h2>🍕 PIZZA NOSTRA</h2>
+            <p><strong>Mesa:</strong> ${mesa}<br><strong>Cliente:</strong> ${cliente}</p>
+            <div class="linea"></div>
+        `;
+        itemsResumen.forEach(it => {
+            if(it.tipo === "pizza") {
+                ticketHtml += `<p>🍕 ${it.descripcion}${it.detalleExtras}<br>${it.nota ? `📝 ${it.nota}<br>` : ""}<strong>$${it.totalItem.toLocaleString()}</strong></p>`;
+            } else {
+                ticketHtml += `<p>🥤 ${it.descripcion} <strong>$${it.totalItem.toLocaleString()}</strong></p>`;
+            }
+        });
+        ticketHtml += `<div class="linea"></div>
+            <p class="total">TOTAL A PAGAR: $${totalGeneral.toLocaleString()} COP</p>
+            <p style="text-align:center; font-size:12px;">¡Gracias por visitar Pizza Nostra!</p>
+            <script>window.print();<\/script>
+            </body>
+            </html>
+        `;
+        const ventana = window.open();
+        ventana.document.write(ticketHtml);
+        ventana.document.close();
+        ventana.focus();
+        setTimeout(() => {
+            ventana.print();
+        }, 200);
+    }
+
+    // Eventos globales
+    document.getElementById("btnResetPedido").addEventListener("click", resetPedido);
+    document.getElementById("btnImprimirTicket").addEventListener("click", imprimirTicket);
+
+    // Inicialización completa
+    function init() {
+        renderPizzas();
+        renderBebidas();
+        actualizarResumenUI();
+    }
+    init();
+</script>
+</body>
+</html>
